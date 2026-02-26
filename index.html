@@ -1,0 +1,1330 @@
+<!-- index.html
+     Put your audio loops in: /sounds/
+     Update the SOUND_LIBRARY filenames below to match your files exactly.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Focus Suite</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#0f1620;
+      --panel2:#0c121a;
+      --text:#e7eef7;
+      --muted:#9fb0c3;
+      --border:rgba(255,255,255,.08);
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+
+      --work:#4cc9f0;
+      --break:#a3ff6f;
+      --accent:#7aa2ff;
+      --danger:#ff5c7a;
+      --warn:#ffcc66;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.18), transparent 60%),
+        radial-gradient(900px 550px at 90% 10%, rgba(76,201,240,.15), transparent 55%),
+        radial-gradient(900px 600px at 50% 110%, rgba(163,255,111,.12), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .app{
+      width:min(980px, 100%);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .topbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      background:rgba(15,22,32,.75);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{
+      display:flex; flex-direction:column; gap:2px;
+      min-width: 220px;
+    }
+    .brand h1{
+      font-size:14px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin:0;
+      color:rgba(231,238,247,.92);
+    }
+    .brand .sub{
+      font-size:12px;
+      color:var(--muted);
+      margin:0;
+    }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+      flex:1;
+    }
+
+    .tabbtn{
+      border:1px solid var(--border);
+      background:rgba(12,18,26,.55);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:600;
+      letter-spacing:.02em;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+    }
+    .tabbtn:active{ transform: translateY(1px) }
+    .tabbtn[aria-selected="true"]{
+      background:rgba(122,162,255,.18);
+      border-color: rgba(122,162,255,.35);
+    }
+
+    .righttools{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      min-width: 220px;
+    }
+
+    .pill{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(12,18,26,.45);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .main{
+      position:relative;
+      overflow:hidden;
+      border-radius:var(--radius);
+      border:1px solid var(--border);
+      background:rgba(15,22,32,.72);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .slider{
+      display:flex;
+      width:200%;
+      transition: transform .55s cubic-bezier(.2,.9,.2,1);
+      will-change: transform;
+    }
+    .panel{
+      width:50%;
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    @media (max-width: 860px){
+      .panel{ grid-template-columns:1fr; }
+      .brand{ min-width:auto }
+      .righttools{ display:none }
+    }
+
+    .card{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background:rgba(12,18,26,.55);
+      padding:14px;
+    }
+
+    .card h2{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(231,238,247,.92);
+    }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .row.space{ justify-content:space-between }
+    .muted{ color:var(--muted); font-size:12px; }
+
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(17,27,39,.65);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px) }
+    .btn.primary{
+      background:rgba(122,162,255,.22);
+      border-color: rgba(122,162,255,.35);
+    }
+    .btn.good{
+      background:rgba(163,255,111,.14);
+      border-color: rgba(163,255,111,.28);
+    }
+    .btn.danger{
+      background:rgba(255,92,122,.14);
+      border-color: rgba(255,92,122,.28);
+    }
+    .btn.ghost{
+      background:rgba(12,18,26,.25);
+    }
+
+    .mini{
+      padding:8px 10px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width:160px;
+    }
+    .field label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    input[type="number"], select{
+      background:rgba(11,15,20,.75);
+      border:1px solid var(--border);
+      color:var(--text);
+      padding:10px 10px;
+      border-radius:12px;
+      outline:none;
+    }
+    input[type="number"]:focus, select:focus{
+      border-color: rgba(122,162,255,.45);
+      box-shadow: 0 0 0 3px rgba(122,162,255,.12);
+    }
+
+    .switch{
+      display:flex; gap:10px; align-items:center; font-size:12px; color:var(--muted);
+      user-select:none;
+    }
+    .switch input{ transform: scale(1.15); }
+
+    /* Timer ring */
+    .timerWrap{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      padding:10px 0 2px;
+    }
+    .ring{
+      width:240px; height:240px;
+      position:relative;
+    }
+    .ring svg{ width:100%; height:100%; display:block; }
+    .ring .center{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:6px;
+      text-align:center;
+      padding:12px;
+    }
+    .timeText{
+      font-size:44px;
+      font-weight:900;
+      letter-spacing:.02em;
+      margin:0;
+    }
+    .phaseText{
+      margin:0;
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(11,15,20,.55);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; background:var(--accent); box-shadow:0 0 18px rgba(122,162,255,.35); }
+
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    /* Mixer */
+    .soundList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .soundItem{
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(11,15,20,.55);
+    }
+
+    .soundItem .name{
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.02em;
+    }
+    .soundItem .file{
+      font-size:11px;
+      color:rgba(159,176,195,.75);
+      margin-top:2px;
+    }
+    .soundItem .left{
+      display:flex; flex-direction:column;
+    }
+
+    .soundItem input[type="range"]{
+      width:100%;
+      accent-color: var(--accent);
+    }
+
+    .kbtn{
+      width:42px; height:42px;
+      display:grid; place-items:center;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(17,27,39,.55);
+      cursor:pointer;
+      user-select:none;
+      font-weight:900;
+    }
+    .kbtn.on{
+      background:rgba(163,255,111,.14);
+      border-color: rgba(163,255,111,.28);
+    }
+
+    .divider{
+      height:1px;
+      background:var(--border);
+      margin:12px 0;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(12,18,26,.85);
+      color:var(--text);
+      font-size:12px;
+      box-shadow:var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(-2px);
+    }
+
+    .hint{
+      font-size:12px;
+      color:rgba(159,176,195,.85);
+      line-height:1.35;
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+
+    a{ color: var(--accent); text-decoration:none; }
+    a:hover{ text-decoration:underline; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Focus Suite</h1>
+        <p class="sub">Pomodoro + Mixer • one engine, two views</p>
+      </div>
+
+      <nav class="tabs" role="tablist" aria-label="Focus Suite Tabs">
+        <button class="tabbtn" id="tab-timer" role="tab" aria-controls="panel-timer" aria-selected="true">Timer</button>
+        <button class="tabbtn" id="tab-sound" role="tab" aria-controls="panel-sound" aria-selected="false">White Noise</button>
+      </nav>
+
+      <div class="righttools">
+        <div class="pill" title="Current session status">
+          <span class="dot" id="statusDot" style="background:var(--accent)"></span>
+          <span id="statusText">Idle</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="slider" id="slider">
+        <!-- TIMER PANEL -->
+        <section class="panel" id="panel-timer" role="tabpanel" aria-labelledby="tab-timer">
+          <div class="card">
+            <h2>Pomodoro</h2>
+
+            <div class="timerWrap">
+              <div class="ring">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <defs>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="2.2" result="coloredBlur"></feGaussianBlur>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"></feMergeNode>
+                        <feMergeNode in="SourceGraphic"></feMergeNode>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.08)" stroke-width="10" fill="none" />
+                  <circle
+                    id="progressCircle"
+                    cx="60" cy="60" r="52"
+                    stroke="var(--work)" stroke-width="10"
+                    stroke-linecap="round"
+                    fill="none"
+                    filter="url(#glow)"
+                    transform="rotate(-90 60 60)"
+                  />
+                </svg>
+                <div class="center">
+                  <p class="phaseText" id="phaseText">Ready</p>
+                  <p class="timeText" id="timeText">25:00</p>
+                  <div class="badge">
+                    <span class="dot" id="phaseDot"></span>
+                    <span id="cycleText">Work: 25 • Break: 5</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <button class="btn primary" id="btnStartPause">Start</button>
+                <button class="btn ghost" id="btnSkip">Skip</button>
+                <button class="btn danger" id="btnReset">Reset</button>
+              </div>
+
+              <div class="row" style="justify-content:center">
+                <label class="switch"><input type="checkbox" id="chkAutoNext" checked> Auto-start next phase</label>
+                <label class="switch"><input type="checkbox" id="chkTimerControlsAudio" checked> Timer controls audio</label>
+                <label class="switch"><input type="checkbox" id="chkFadeOut" checked> Fade out at end</label>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="grid2">
+              <div class="field">
+                <label for="workMin">Work (minutes)</label>
+                <input id="workMin" type="number" min="1" max="180" value="25" />
+              </div>
+              <div class="field">
+                <label for="breakMin">Break (minutes)</label>
+                <input id="breakMin" type="number" min="1" max="60" value="5" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px">
+              <button class="btn good mini" id="btnApplyPomodoro">Apply</button>
+              <button class="btn ghost mini" id="btn25_5">25/5</button>
+              <button class="btn ghost mini" id="btn50_10">50/10</button>
+              <button class="btn ghost mini" id="btn90_20">90/20</button>
+            </div>
+
+            <p class="hint" style="margin:10px 0 0 0;">
+              Tip: Build a focus mix on the <b>White Noise</b> tab, then keep this timer running while the mixer stays synced.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Focus Mix</h2>
+
+            <div class="row space">
+              <div class="small">
+                <div><b>Selected Mix:</b> <span id="mixName">Custom</span></div>
+                <div>Master: <span id="masterPct">70%</span></div>
+              </div>
+              <div class="row">
+                <button class="btn ghost mini" id="btnOpenSound">Open Mixer →</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button class="btn good" id="btnQuickPlay">Play Mix</button>
+              <button class="btn danger" id="btnQuickStop">Stop</button>
+            </div>
+
+            <p class="small" style="margin:10px 0 0 0;">
+              “Play Mix” is useful if you want the audio without starting a timer.
+            </p>
+          </div>
+        </section>
+
+        <!-- SOUND PANEL -->
+        <section class="panel" id="panel-sound" role="tabpanel" aria-labelledby="tab-sound">
+          <div class="card">
+            <h2>White Noise Mixer</h2>
+
+            <div class="row space">
+              <div class="field" style="min-width:220px">
+                <label for="presetSelect">Presets</label>
+                <select id="presetSelect"></select>
+              </div>
+              <div class="row">
+                <button class="btn ghost mini" id="btnSavePreset">Save</button>
+                <button class="btn danger mini" id="btnDeletePreset">Delete</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="row space">
+              <div class="field" style="min-width:220px">
+                <label for="masterVol">Master volume</label>
+                <input id="masterVol" type="range" min="0" max="100" value="70" />
+              </div>
+              <div class="pill">
+                <span class="dot" style="background:var(--accent)"></span>
+                <span id="audioStateText">Audio: stopped</span>
+              </div>
+            </div>
+
+            <div class="soundList" id="soundList"></div>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button class="btn good" id="btnPlayAll">Play</button>
+              <button class="btn danger" id="btnStopAll">Stop</button>
+              <button class="btn ghost" id="btnFadeOutNow">Fade Out</button>
+            </div>
+
+            <p class="hint" style="margin:10px 0 0 0;">
+              Put your loops in <code>/sounds/</code>. Use seamless loops for best results.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Sound Timer</h2>
+
+            <div class="row">
+              <div class="field">
+                <label for="soundTimerMin">Play for (minutes)</label>
+                <input id="soundTimerMin" type="number" min="1" max="600" value="30" />
+              </div>
+              <div class="field">
+                <label>&nbsp;</label>
+                <button class="btn primary" id="btnStartSoundTimer">Start Sound Timer</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="small" style="margin:0;">
+              This uses the <b>same</b> timer engine as Pomodoro. If a Pomodoro is already running, you can skip/reset it first.
+              When the timer ends, it can fade out the audio (if enabled on the Timer tab).
+            </p>
+
+            <div class="divider"></div>
+
+            <div class="row">
+              <button class="btn ghost" id="btnBackToTimer">Back to Timer →</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* =========================
+   1) SOUND LIBRARY (EDIT ME)
+   =========================
+   Put your files in /sounds/ and match filenames here.
+   Recommended: .ogg or .wav for looping, but .mp3 can work too.
+*/
+const SOUND_LIBRARY = [
+  { id: "wind",     name: "Wind",       file: "wind.ogg",     defaultVol: 0.35 },
+  { id: "beach",    name: "Beach",      file: "beach.ogg",    defaultVol: 0.40 },
+  { id: "campfire", name: "Campfire",   file: "campfire.ogg", defaultVol: 0.35 },
+  { id: "rain",     name: "Rain",       file: "rain.ogg",     defaultVol: 0.40 },
+  { id: "white",    name: "White Noise",file: "white.ogg",    defaultVol: 0.25 },
+  { id: "brown",    name: "Brown Noise",file: "brown.ogg",    defaultVol: 0.25 },
+  // Optional extras:
+  // { id: "thunder",  name: "Distant Thunder", file: "thunder.ogg", defaultVol: 0.18 },
+  // { id: "crickets", name: "Night Crickets",  file: "crickets.ogg", defaultVol: 0.22 },
+];
+
+/* =========================
+   2) SMALL UTILS
+   ========================= */
+const $ = (sel) => document.querySelector(sel);
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+const pad2 = (n) => String(n).padStart(2, "0");
+function fmtTime(sec){
+  sec = Math.max(0, Math.floor(sec));
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${pad2(m)}:${pad2(s)}`;
+}
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1700);
+}
+
+/* =========================
+   3) SLIDES / TABS
+   ========================= */
+const slider = $("#slider");
+const tabTimer = $("#tab-timer");
+const tabSound = $("#tab-sound");
+
+function setTab(which){
+  const isTimer = which === "timer";
+  slider.style.transform = isTimer ? "translateX(0%)" : "translateX(-50%)";
+  tabTimer.setAttribute("aria-selected", isTimer ? "true" : "false");
+  tabSound.setAttribute("aria-selected", isTimer ? "false" : "true");
+}
+tabTimer.addEventListener("click", ()=>setTab("timer"));
+tabSound.addEventListener("click", ()=>setTab("sound"));
+$("#btnOpenSound").addEventListener("click", ()=>setTab("sound"));
+$("#btnBackToTimer").addEventListener("click", ()=>setTab("timer"));
+
+/* Swipe between tabs on mobile */
+let touchStartX = null;
+slider.addEventListener("touchstart", (e)=>{
+  if(!e.touches?.length) return;
+  touchStartX = e.touches[0].clientX;
+}, {passive:true});
+slider.addEventListener("touchend", (e)=>{
+  if(touchStartX == null) return;
+  const endX = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : touchStartX;
+  const dx = endX - touchStartX;
+  touchStartX = null;
+  if(Math.abs(dx) < 60) return;
+  const isOnTimer = tabTimer.getAttribute("aria-selected") === "true";
+  if(dx < 0 && isOnTimer) setTab("sound");
+  if(dx > 0 && !isOnTimer) setTab("timer");
+}, {passive:true});
+
+/* =========================
+   4) AUDIO MIXER
+   ========================= */
+const soundListEl = $("#soundList");
+const masterVolEl = $("#masterVol");
+const audioStateText = $("#audioStateText");
+const mixNameEl = $("#mixName");
+const masterPctEl = $("#masterPct");
+
+const mixer = {
+  master: 0.70,
+  tracks: new Map(),   // id -> { active, vol, audioEl, baseVol }
+  playing: false,
+  fadeInterval: null,
+};
+
+function buildTracks(){
+  SOUND_LIBRARY.forEach(s => {
+    const audio = new Audio(`/sounds/${s.file}`);
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.volume = 0; // we apply volume via updateVolumes
+    mixer.tracks.set(s.id, {
+      id: s.id,
+      name: s.name,
+      file: s.file,
+      active: false,
+      vol: s.defaultVol,
+      audioEl: audio,
+    });
+  });
+}
+
+function updateVolumes(){
+  const master = mixer.master;
+  mixer.tracks.forEach(t => {
+    const target = (t.active && mixer.playing) ? (t.vol * master) : 0;
+    // Avoid clicks: gently approach target
+    const current = t.audioEl.volume;
+    const next = current + (target - current) * 0.25; // smoothing
+    t.audioEl.volume = clamp(next, 0, 1);
+  });
+  masterPctEl.textContent = `${Math.round(mixer.master * 100)}%`;
+}
+
+async function playMixer(){
+  if(mixer.playing) return;
+  mixer.playing = true;
+  // Start only the active tracks
+  const starters = [];
+  mixer.tracks.forEach(t => {
+    if(t.active){
+      try{
+        // Reset if ended
+        if(t.audioEl.currentTime > 0 && t.audioEl.currentTime < 0.05) {}
+        starters.push(t.audioEl.play());
+      }catch(_){}
+    }
+  });
+  try{ await Promise.allSettled(starters); }catch(_){}
+  audioStateText.textContent = "Audio: playing";
+  updateVolumes();
+}
+
+function stopMixer(hard=false){
+  mixer.playing = false;
+  // Fade to 0 quickly then pause, or hard stop
+  mixer.tracks.forEach(t => {
+    if(hard){
+      t.audioEl.volume = 0;
+      t.audioEl.pause();
+      try{ t.audioEl.currentTime = 0; }catch(_){}
+    }else{
+      t.audioEl.volume = 0;
+      t.audioEl.pause();
+    }
+  });
+  audioStateText.textContent = "Audio: stopped";
+}
+
+function fadeOut(seconds=8){
+  clearInterval(mixer.fadeInterval);
+  const start = performance.now();
+  const startMaster = mixer.master;
+  mixer.fadeInterval = setInterval(()=>{
+    const t = (performance.now() - start) / (seconds*1000);
+    const k = clamp(1 - t, 0, 1);
+    mixer.master = startMaster * k;
+    masterVolEl.value = Math.round(mixer.master * 100);
+    updateVolumes();
+    if(k <= 0){
+      clearInterval(mixer.fadeInterval);
+      mixer.fadeInterval = null;
+      stopMixer(true);
+      // restore master to prior level? we keep it at 0; user can raise it
+      toast("Faded out");
+    }
+  }, 80);
+}
+
+function setMaster(v01){
+  mixer.master = clamp(v01, 0, 1);
+  updateVolumes();
+  // keep timer card in sync
+  masterPctEl.textContent = `${Math.round(mixer.master * 100)}%`;
+}
+
+function setTrackActive(id, on){
+  const t = mixer.tracks.get(id);
+  if(!t) return;
+  t.active = on;
+  if(mixer.playing){
+    if(on){
+      // start track if not playing
+      t.audioEl.play().catch(()=>{});
+    }else{
+      // silence; pausing is optional but helps CPU
+      t.audioEl.volume = 0;
+      t.audioEl.pause();
+    }
+  }
+  updateVolumes();
+}
+function setTrackVol(id, v01){
+  const t = mixer.tracks.get(id);
+  if(!t) return;
+  t.vol = clamp(v01, 0, 1);
+  updateVolumes();
+}
+
+function renderMixerUI(){
+  soundListEl.innerHTML = "";
+  mixer.tracks.forEach(t => {
+    const item = document.createElement("div");
+    item.className = "soundItem";
+    item.innerHTML = `
+      <button class="kbtn ${t.active ? "on":""}" aria-label="Toggle ${t.name}">${t.active ? "ON":"OFF"}</button>
+      <div>
+        <div class="name">${t.name}</div>
+        <div class="file">/sounds/${t.file}</div>
+        <input type="range" min="0" max="100" value="${Math.round(t.vol*100)}" aria-label="${t.name} volume" />
+      </div>
+      <div class="muted" style="text-align:right; width:44px;">
+        <div>${Math.round(t.vol*100)}%</div>
+      </div>
+    `;
+    const toggle = item.querySelector(".kbtn");
+    const slider = item.querySelector('input[type="range"]');
+    const pct = item.querySelector(".muted div");
+
+    toggle.addEventListener("click", ()=>{
+      setTrackActive(t.id, !mixer.tracks.get(t.id).active);
+      toggle.classList.toggle("on", mixer.tracks.get(t.id).active);
+      toggle.textContent = mixer.tracks.get(t.id).active ? "ON" : "OFF";
+      // If user toggles something on while stopped, keep it ready
+      if(mixer.tracks.get(t.id).active && !mixer.playing){
+        audioStateText.textContent = "Audio: stopped (ready)";
+      }
+    });
+
+    slider.addEventListener("input", ()=>{
+      const v = Number(slider.value)/100;
+      setTrackVol(t.id, v);
+      pct.textContent = `${Math.round(v*100)}%`;
+    });
+
+    soundListEl.appendChild(item);
+  });
+}
+
+masterVolEl.addEventListener("input", ()=>{
+  setMaster(Number(masterVolEl.value)/100);
+  if(mixer.playing) updateVolumes();
+});
+
+/* Mixer buttons */
+$("#btnPlayAll").addEventListener("click", async ()=>{
+  await playMixer();
+  toast("Playing");
+});
+$("#btnStopAll").addEventListener("click", ()=>{
+  stopMixer(true);
+  toast("Stopped");
+});
+$("#btnFadeOutNow").addEventListener("click", ()=>{
+  if(!mixer.playing){ toast("Audio is already stopped"); return; }
+  fadeOut(8);
+});
+
+/* Timer panel quick controls */
+$("#btnQuickPlay").addEventListener("click", async ()=>{
+  await playMixer();
+  toast("Playing mix");
+});
+$("#btnQuickStop").addEventListener("click", ()=>{
+  stopMixer(true);
+  toast("Stopped");
+});
+
+/* =========================
+   5) PRESETS (localStorage)
+   ========================= */
+const PRESET_KEY = "focusSuite_mixer_presets_v1";
+const ACTIVE_PRESET_KEY = "focusSuite_active_preset_v1";
+
+function loadPresets(){
+  try{
+    const raw = localStorage.getItem(PRESET_KEY);
+    const presets = raw ? JSON.parse(raw) : null;
+    if(Array.isArray(presets) && presets.length) return presets;
+  }catch(_){}
+  // defaults
+  return [
+    {
+      name: "Windy Beach",
+      master: 0.72,
+      tracks: {
+        wind: {active:true, vol:0.40},
+        beach:{active:true, vol:0.42},
+        campfire:{active:false, vol:0.30},
+        rain:{active:false, vol:0.35},
+        white:{active:false, vol:0.20},
+        brown:{active:false, vol:0.20},
+      }
+    },
+    {
+      name: "Campfire Study",
+      master: 0.68,
+      tracks: {
+        wind: {active:false, vol:0.35},
+        beach:{active:false, vol:0.40},
+        campfire:{active:true, vol:0.42},
+        rain:{active:false, vol:0.40},
+        white:{active:true, vol:0.18},
+        brown:{active:false, vol:0.18},
+      }
+    },
+    {
+      name: "Rain + Brown",
+      master: 0.62,
+      tracks: {
+        wind: {active:false, vol:0.35},
+        beach:{active:false, vol:0.40},
+        campfire:{active:false, vol:0.35},
+        rain:{active:true, vol:0.50},
+        white:{active:false, vol:0.20},
+        brown:{active:true, vol:0.28},
+      }
+    },
+  ];
+}
+
+let presets = loadPresets();
+
+function savePresets(){
+  localStorage.setItem(PRESET_KEY, JSON.stringify(presets));
+}
+
+function currentMixerSnapshot(){
+  const snap = { master: mixer.master, tracks: {} };
+  mixer.tracks.forEach(t => {
+    snap.tracks[t.id] = { active: t.active, vol: t.vol };
+  });
+  return snap;
+}
+
+function applyPreset(p){
+  if(!p) return;
+  setMaster(p.master ?? 0.7);
+  masterVolEl.value = Math.round(mixer.master * 100);
+
+  mixer.tracks.forEach(t => {
+    const s = p.tracks?.[t.id];
+    if(s){
+      t.active = !!s.active;
+      t.vol = clamp(Number(s.vol ?? t.vol), 0, 1);
+    }
+  });
+
+  renderMixerUI();
+  updateVolumes();
+  mixNameEl.textContent = p.name || "Custom";
+  localStorage.setItem(ACTIVE_PRESET_KEY, p.name || "");
+}
+
+function renderPresetSelect(){
+  const sel = $("#presetSelect");
+  sel.innerHTML = "";
+  presets.forEach((p, idx)=>{
+    const opt = document.createElement("option");
+    opt.value = String(idx);
+    opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+
+  // restore last used preset if possible
+  const lastName = localStorage.getItem(ACTIVE_PRESET_KEY) || "";
+  const found = presets.findIndex(p=>p.name===lastName);
+  sel.value = found >= 0 ? String(found) : "0";
+  applyPreset(presets[Number(sel.value)]);
+}
+$("#presetSelect").addEventListener("change", ()=>{
+  const idx = Number($("#presetSelect").value);
+  applyPreset(presets[idx]);
+  toast(`Preset: ${presets[idx].name}`);
+});
+
+$("#btnSavePreset").addEventListener("click", ()=>{
+  const name = prompt("Preset name?", mixNameEl.textContent === "Custom" ? "" : mixNameEl.textContent);
+  if(!name) return;
+  const snap = currentMixerSnapshot();
+  const existingIdx = presets.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+  const obj = { name, master: snap.master, tracks: snap.tracks };
+
+  if(existingIdx >= 0){
+    presets[existingIdx] = obj;
+    toast("Preset updated");
+  }else{
+    presets.push(obj);
+    toast("Preset saved");
+  }
+  savePresets();
+  renderPresetSelect();
+  // jump to new/updated
+  const idx = presets.findIndex(p=>p.name===name);
+  $("#presetSelect").value = String(idx);
+  applyPreset(presets[idx]);
+});
+
+$("#btnDeletePreset").addEventListener("click", ()=>{
+  if(presets.length <= 1){
+    toast("Keep at least 1 preset");
+    return;
+  }
+  const idx = Number($("#presetSelect").value);
+  const name = presets[idx]?.name || "this preset";
+  if(!confirm(`Delete "${name}"?`)) return;
+  presets.splice(idx, 1);
+  savePresets();
+  renderPresetSelect();
+  toast("Deleted");
+});
+
+/* =========================
+   6) TIMER ENGINE (shared)
+   ========================= */
+const statusText = $("#statusText");
+const statusDot = $("#statusDot");
+
+const phaseText = $("#phaseText");
+const timeText = $("#timeText");
+const cycleText = $("#cycleText");
+const phaseDot = $("#phaseDot");
+
+const progressCircle = $("#progressCircle");
+const R = 52;
+const CIRC = 2 * Math.PI * R;
+progressCircle.style.strokeDasharray = `${CIRC}`;
+progressCircle.style.strokeDashoffset = `${0}`;
+
+const timer = {
+  running: false,
+  mode: "pomodoro",        // "pomodoro" | "custom"
+  phase: "work",           // "work" | "break" | "custom"
+  workSec: 25*60,
+  breakSec: 5*60,
+  totalSec: 25*60,
+  remainingSec: 25*60,
+  interval: null,
+  autoNext: true,
+};
+
+function setStatus(text, colorVar){
+  statusText.textContent = text;
+  statusDot.style.background = `var(${colorVar})`;
+}
+
+function setPhaseUI(phase){
+  if(phase === "work"){
+    phaseText.textContent = "Work";
+    progressCircle.style.stroke = "var(--work)";
+    phaseDot.style.background = "var(--work)";
+    setStatus("Work", "--work");
+  }else if(phase === "break"){
+    phaseText.textContent = "Break";
+    progressCircle.style.stroke = "var(--break)";
+    phaseDot.style.background = "var(--break)";
+    setStatus("Break", "--break");
+  }else{
+    phaseText.textContent = "Sound Timer";
+    progressCircle.style.stroke = "var(--accent)";
+    phaseDot.style.background = "var(--accent)";
+    setStatus("Sound Timer", "--accent");
+  }
+}
+
+function updateTimerUI(){
+  timeText.textContent = fmtTime(timer.remainingSec);
+
+  const progress = timer.totalSec > 0 ? (1 - (timer.remainingSec / timer.totalSec)) : 0;
+  const offset = CIRC * progress;
+  progressCircle.style.strokeDashoffset = `${offset}`;
+
+  $("#btnStartPause").textContent = timer.running ? "Pause" : "Start";
+}
+
+function tick(){
+  timer.remainingSec -= 1;
+  if(timer.remainingSec <= 0){
+    timer.remainingSec = 0;
+    updateTimerUI();
+    onTimerFinished();
+    return;
+  }
+  updateTimerUI();
+}
+
+function startInterval(){
+  clearInterval(timer.interval);
+  timer.interval = setInterval(tick, 1000);
+}
+
+function startTimer(){
+  if(timer.running) return;
+  timer.running = true;
+  startInterval();
+  updateTimerUI();
+  if($("#chkTimerControlsAudio").checked){
+    playMixer().catch(()=>{});
+  }
+}
+
+function pauseTimer(){
+  timer.running = false;
+  clearInterval(timer.interval);
+  timer.interval = null;
+  updateTimerUI();
+  setStatus(timer.phase === "work" ? "Work (paused)" : timer.phase === "break" ? "Break (paused)" : "Sound (paused)",
+            timer.phase === "work" ? "--work" : timer.phase === "break" ? "--break" : "--accent");
+}
+
+function resetTimer(toDefault=true){
+  pauseTimer();
+  if(timer.mode === "pomodoro"){
+    timer.phase = "work";
+    timer.totalSec = timer.workSec;
+    timer.remainingSec = timer.workSec;
+    setPhaseUI("work");
+    setStatus("Idle", "--accent");
+  }else{
+    // keep custom duration if not default
+    if(toDefault){
+      timer.totalSec = 30*60;
+      timer.remainingSec = 30*60;
+    }else{
+      timer.remainingSec = timer.totalSec;
+    }
+    timer.phase = "custom";
+    setPhaseUI("custom");
+    setStatus("Idle", "--accent");
+  }
+  updateTimerUI();
+}
+
+function skipPhase(){
+  if(timer.mode === "pomodoro"){
+    if(timer.phase === "work"){
+      switchToBreak();
+    }else{
+      switchToWork();
+    }
+  }else{
+    // custom: just finish it
+    timer.remainingSec = 0;
+    updateTimerUI();
+    onTimerFinished();
+  }
+}
+
+function switchToWork(){
+  timer.phase = "work";
+  timer.totalSec = timer.workSec;
+  timer.remainingSec = timer.workSec;
+  setPhaseUI("work");
+  updateTimerUI();
+}
+function switchToBreak(){
+  timer.phase = "break";
+  timer.totalSec = timer.breakSec;
+  timer.remainingSec = timer.breakSec;
+  setPhaseUI("break");
+  updateTimerUI();
+}
+
+function onTimerFinished(){
+  pauseTimer();
+
+  // End behavior: fade out audio (optional)
+  const fade = $("#chkFadeOut").checked;
+  const controlsAudio = $("#chkTimerControlsAudio").checked;
+
+  if(controlsAudio && mixer.playing){
+    if(fade){
+      fadeOut(8);
+    }else{
+      stopMixer(true);
+    }
+  }
+
+  // Tiny “chime”: use a quick oscillator beep (no file needed)
+  try{
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "sine";
+    o.frequency.value = (timer.phase === "break") ? 660 : 880;
+    g.gain.value = 0.0001;
+    o.connect(g);
+    g.connect(ctx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35);
+    o.stop(ctx.currentTime + 0.36);
+    setTimeout(()=>ctx.close().catch(()=>{}), 600);
+  }catch(_){}
+
+  // Pomodoro: auto advance if enabled
+  if(timer.mode === "pomodoro"){
+    if(timer.phase === "work"){
+      toast("Work complete");
+      if($("#chkAutoNext").checked){
+        switchToBreak();
+        startTimer();
+      }else{
+        switchToBreak();
+      }
+    }else{
+      toast("Break complete");
+      if($("#chkAutoNext").checked){
+        switchToWork();
+        startTimer();
+      }else{
+        switchToWork();
+      }
+    }
+  }else{
+    toast("Sound timer complete");
+    setStatus("Idle", "--accent");
+  }
+}
+
+/* Timer controls wiring */
+$("#btnStartPause").addEventListener("click", ()=>{
+  if(timer.running) pauseTimer();
+  else startTimer();
+});
+$("#btnReset").addEventListener("click", ()=>{
+  resetTimer(false);
+  toast("Reset");
+});
+$("#btnSkip").addEventListener("click", ()=>{
+  skipPhase();
+  toast("Skipped");
+});
+$("#chkAutoNext").addEventListener("change", ()=>{
+  timer.autoNext = $("#chkAutoNext").checked;
+});
+
+/* Pomodoro config */
+function applyPomodoroFromInputs(){
+  const w = clamp(Number($("#workMin").value || 25), 1, 180);
+  const b = clamp(Number($("#breakMin").value || 5), 1, 60);
+  timer.mode = "pomodoro";
+  timer.workSec = w * 60;
+  timer.breakSec = b * 60;
+  cycleText.textContent = `Work: ${w} • Break: ${b}`;
+  // If idle or currently pomodoro, reset to work
+  if(!timer.running){
+    timer.phase = "work";
+    timer.totalSec = timer.workSec;
+    timer.remainingSec = timer.workSec;
+    setPhaseUI("work");
+    updateTimerUI();
+    setStatus("Idle", "--accent");
+  }
+  toast("Pomodoro updated");
+}
+$("#btnApplyPomodoro").addEventListener("click", applyPomodoroFromInputs);
+
+$("#btn25_5").addEventListener("click", ()=>{
+  $("#workMin").value = 25; $("#breakMin").value = 5;
+  applyPomodoroFromInputs();
+});
+$("#btn50_10").addEventListener("click", ()=>{
+  $("#workMin").value = 50; $("#breakMin").value = 10;
+  applyPomodoroFromInputs();
+});
+$("#btn90_20").addEventListener("click", ()=>{
+  $("#workMin").value = 90; $("#breakMin").value = 20;
+  applyPomodoroFromInputs();
+});
+
+/* Sound timer */
+$("#btnStartSoundTimer").addEventListener("click", ()=>{
+  if(timer.running && timer.mode === "pomodoro"){
+    toast("Pomodoro running — pause/reset first");
+    return;
+  }
+  const min = clamp(Number($("#soundTimerMin").value || 30), 1, 600);
+  timer.mode = "custom";
+  timer.phase = "custom";
+  timer.totalSec = min * 60;
+  timer.remainingSec = min * 60;
+  setPhaseUI("custom");
+  updateTimerUI();
+  setTab("timer");
+  startTimer();
+  toast(`Sound timer: ${min} min`);
+});
+
+/* =========================
+   7) INIT + SYNC UI
+   ========================= */
+function refreshMixSummary(){
+  mixNameEl.textContent = $("#presetSelect").selectedOptions[0]?.textContent || "Custom";
+  masterPctEl.textContent = `${Math.round(mixer.master*100)}%`;
+}
+
+buildTracks();
+renderPresetSelect(); // also applies a preset
+renderMixerUI();
+refreshMixSummary();
+
+setMaster(Number(masterVolEl.value)/100);
+applyPomodoroFromInputs();
+resetTimer(true);
+setStatus("Idle", "--accent");
+
+/* Keep the mix summary updated when tracks change */
+const origSetTrackActive = setTrackActive;
+const origSetTrackVol = setTrackVol;
+window.setTrackActive = function(id, on){ origSetTrackActive(id,on); refreshMixSummary(); };
+window.setTrackVol = function(id, v){ origSetTrackVol(id,v); refreshMixSummary(); };
+
+$("#presetSelect").addEventListener("change", refreshMixSummary);
+
+/* Friendly warning if user hasn't updated files */
+(function sanityCheckFiles(){
+  // We can’t truly check file existence without fetch, but we can warn about placeholders.
+  const missingLike = SOUND_LIBRARY.filter(s => /^(wind|beach|campfire|rain|white|brown)\.(ogg|wav|mp3)$/i.test(s.file));
+  if(missingLike.length){
+    // Only a mild hint, not spammy
+    setTimeout(()=>{
+      toast("If audio is silent, check /sounds/ filenames in index.html");
+    }, 900);
+  }
+})();
+
+</script>
+</body>
+</html>
