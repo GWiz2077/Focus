@@ -414,7 +414,7 @@
             </div>
 
             <p class="hint" style="margin:10px 0 0 0;">
-              Put your files in <code>/sounds/</code>. This app auto-chooses <b>.ogg → .mp3 → .m4a</b>.
+              Put your files in <code>sounds/</code>. This app auto-chooses <b>.ogg → .mp3 → .m4a</b>.
             </p>
           </div>
 
@@ -585,9 +585,9 @@ function tryLoadAudio(url, timeoutMs = 3000){
 
 async function pickAndLoad(base){
   const candidates = [
-    { ext:"ogg", url:`/sounds/${base}.ogg` },
-    { ext:"mp3", url:`/sounds/${base}.mp3` },
-    { ext:"m4a", url:`/sounds/${base}.m4a` },
+    { ext:"ogg", url:`sounds/${base}.ogg` },
+    { ext:"mp3", url:`sounds/${base}.mp3` },
+    { ext:"m4a", url:`sounds/${base}.m4a` },
   ].filter(c => canLikelyPlay(c.ext));
 
   for (const c of candidates){
@@ -597,7 +597,7 @@ async function pickAndLoad(base){
     }catch(_){}
   }
   // fallback (still show the track, but it'll fail if truly missing)
-  const url = candidates[0]?.url || `/sounds/${base}.mp3`;
+  const url = candidates[0]?.url || `sounds/${base}.mp3`;
   const audio = new Audio(url);
   return { audio, url };
 }
